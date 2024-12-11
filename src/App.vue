@@ -1,26 +1,45 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <h1>Космические корабли</h1>
+    <StarshipList @showPilots="showPilots" :onPageChange="fetchPage" />
+    <StarshipPagination
+      :previous="previous"
+      :next="next"
+      @onPageChange="fetchPage"
+    />
+    <PilotsModal :pilotUrls="currentPilotUrls" ref="modal" />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import StarshipList from './components/StarshipList.vue';
+import StarshipPagination from './components/StarshipPagination.vue';
+import PilotsModal from './components/PilotsModal.vue';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  components: { StarshipList, StarshipPagination, PilotsModal },
+  data() {
+    return {
+      previous: null,
+      next: null,
+      currentPilotUrls: [],
+    };
+  },
+  methods: {
+    async fetchPage(url) {
+      const response = await fetch(url);
+      const data = await response.json();
+      this.previous = data.previous;
+      this.next = data.next;
+    },
+    showPilots(pilotUrls) {
+      this.currentPilotUrls = pilotUrls;
+      this.$refs.modal.openModal();
+    },
+  },
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+/* Добавьте стили по желанию */
 </style>
